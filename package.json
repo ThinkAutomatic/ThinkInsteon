@@ -1,0 +1,15 @@
+{
+  "name": "ThinkInsteon",
+  "version": "0.0.0",
+  "description": "",
+  "main": "ThinkInsteon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Steve Harris <steve@thinkautomatic.io> (http://thinkautomatic.io/)",
+  "license": "MIT",
+  "dependencies": {
+    "home-controller": "^0.6.0",
+    "thinkdevice": "^1.0.2"
+  }
+}

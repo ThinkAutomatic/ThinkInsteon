@@ -1,5 +1,5 @@
 # ThinkInsteon
-Integrates Insteon devices with the Think Automatic machine learning platform
+Integrates Insteon PLC with the Think Automatic machine learning platform
 
 ## Installation 
 ```
