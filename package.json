@@ -10,6 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "home-controller": "^0.6.0",
-    "thinkdevice": "^1.0.2"
+    "thinkdevice": "^1.2.0"
   }
 }

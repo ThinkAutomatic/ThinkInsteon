@@ -6,6 +6,11 @@ var insteon = new Insteon();
 var portNum = 0;
 var linkData = null;
 
+td.connect({ name: 'Insteon Gateway',  deviceTypeUuid: '636a0568-5dd1-414f-9328-a092164e5374' }, function () { 
+  console.log('Started');
+  findHub();
+});
+
 function debugOut(label, message) {
   if (message) {
     if (message.constructor == Object) {
@@ -21,6 +26,8 @@ function debugOut(label, message) {
 }
 
 function nextPort() {
+  td.unlockPeripheral('/dev/ttyUSB' + portNum.toString());
+
   if (portNum >= 126) {
     debugOut('Unable to find PLC');
   }
@@ -195,37 +202,45 @@ function processPlatformMsg(command) {
 
 
 function findHub() {
-  debugOut('Attempting to open /dev/ttyUSB' + portNum.toString());
+  var portName = '/dev/ttyUSB' + portNum.toString();
+  debugOut('Attempting to open ' + portName);
   
-  insteon.serial('/dev/ttyUSB' + portNum.toString(), function(){
-    debugOut('Connection opened');
-    // Get gateway info
-    insteon.info(function(error, info) {
-      if (!info) {
-        debugOut('Unable to find PLC on /dev/ttyUSB' + portNum.toString());
-        insteon.close();
-      }
-      else {
-        debugOut('info', info);
-        td.connect({ name: 'Insteon Gateway',  deviceTypeUuid: '636a0568-5dd1-414f-9328-a092164e5374' }, function () { 
-          debugOut('Connected to platform');
-          td.patch({ insteonId: info['id'] }, function (data) {
-            debugOut('Response from platform:');
-            debugOut(data);
-            if (data['devices']) {
-              data['devices'].forEach(setupDeviceEventHandlers);
-            }
-            sendKeepAlives();
-          });
+  td.lockPeripheral(portName, { wait: 10000 }, function (err) {
+    if (err) {
+      console.log('Unable to lock port ' + portName);
+      nextPort(true);
+      return;
+    }
 
-          td.on('message', function (data) {
-//            debugOut('Received from platform:');
-            processPlatformMsg(data);
-          });          
-        });      
-      }
+    insteon.serial(portName, function(){
+      debugOut('Connection opened');
+      // Get gateway info
+      insteon.info(function(error, info) {
+        if (!info) {
+          debugOut('Unable to find PLC on ' + portName);
+          insteon.close();
+        }
+        else {
+          debugOut('info', info);
+          td.connect({ name: 'Insteon Gateway',  deviceTypeUuid: '636a0568-5dd1-414f-9328-a092164e5374' }, function () { 
+            debugOut('Connected to platform');
+            td.patch({ insteonId: info['id'] }, function (data) {
+              debugOut('Response from platform:');
+              debugOut(data);
+              if (data['devices']) {
+                data['devices'].forEach(setupDeviceEventHandlers);
+              }
+              sendKeepAlives();
+            });
+
+            td.on('message', function (data) {
+  //            debugOut('Received from platform:');
+              processPlatformMsg(data);
+            });          
+          });      
+        }
+      });
     });
   });
 }
 
-findHub();
