@@ -9,7 +9,7 @@
   "author": "Steve Harris <steve@thinkautomatic.io> (http://thinkautomatic.io/)",
   "license": "MIT",
   "dependencies": {
-    "home-controller": "^0.6.0",
-    "thinkdevice": "^1.2.0"
+    "home-controller": "^0.9.0",
+    "thinkdevice": "^1.3.3"
   }
 }
